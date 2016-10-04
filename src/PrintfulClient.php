@@ -54,12 +54,13 @@ class PrintfulClient
      *
      * @param string    $method
      * @param string    $action
+     * @param array     $data
      *
      * @return mixed
      */
-    public function request($method, $action)
+    public function request($method, $action, $data = [])
     {
-        $response = $this->client->request($method, $action);
+        $response = $this->client->request($method, $action, ['json' => $data]);
 
         if($response->getStatusCode() != 200){
             throw new PrintfulApiException($response->getReasonPhrase(), $response->getStatusCode());
@@ -77,4 +78,29 @@ class PrintfulClient
     {
         return $this->request('GET', 'products');
     }
+
+    /**
+     * Returns information about a specific product and a list of variants for this product.
+     *
+     * @param integer     $productId
+     *
+     * @return array
+     */
+    public function getVariants($productId)
+    {
+        return $this->request('GET', 'products/'.$productId);
+    }
+
+    /**
+     * Creates a new order and optionally submits it for fulfillment
+     *
+     * @param array     $orderData
+     *
+     * @return array
+     */
+    public function createOrder($orderData)
+    {
+        return $this->request('POST', 'orders', $orderData);
+    }
+
 }
