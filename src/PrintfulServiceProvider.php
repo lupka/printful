@@ -16,7 +16,17 @@ class PrintfulServiceProvider extends ServiceProvider {
     {
         $this->publishes([
             __DIR__.'/../config/config.php' => config_path('printful.php'),
-        ]);
+        ], 'config');
     }
-    
+
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+
+    }
+
 }
