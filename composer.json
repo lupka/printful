@@ -1,0 +1,21 @@
+{
+    "name": "lupka/printful",
+    "description": "Printful API for Laravel",
+    "license": "MIT",
+    "type": "package",
+    "keywords": ["laravel", "printful", "api"],
+    "authors": [
+        {
+            "name": "Alex Chalupka",
+            "email": "lupka31@gmail.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Lupka\\Printful\\": "src/"
+        }
+    }
+}
