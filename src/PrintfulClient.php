@@ -3,9 +3,11 @@
 namespace Lupka\Printful;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Validator;
 
-use Lupka\Printful\Exceptions\PrintfulApiException;
 use Lupka\Printful\Exceptions\PrintfulException;
+use Lupka\Printful\Exceptions\PrintfulApiException;
+use Lupka\Printful\Exceptions\PrintfulValidationException;
 
 class PrintfulClient
 {
@@ -26,9 +28,16 @@ class PrintfulClient
     /*
      * Guzzle client instance
      *
-     * @var string
+     * @var Client
      */
     private $client;
+
+    /*
+     * Validator
+     *
+     * @var Validator
+     */
+    private $validator = null;
 
     /**
      * Create a new Printful client instance
@@ -60,6 +69,10 @@ class PrintfulClient
      */
     public function request($method, $action, $data = [])
     {
+        if($this->validator && $this->validator->fails()){
+            throw new PrintfulValidationException($this->validator->errors(), 400);
+        }
+
         $response = $this->client->request($method, $action, ['json' => $data]);
 
         if($response->getStatusCode() != 200){
@@ -101,6 +114,24 @@ class PrintfulClient
     public function createOrder($orderData)
     {
         return $this->request('POST', 'orders', $orderData);
+    }
+
+    /**
+     * Calculate tax rate
+     *
+     * @param array     $recipient
+     *
+     * @return array
+     */
+    public function calculateTaxRate($recipient)
+    {
+        $this->validator = Validator::make($recipient, [
+            'country_code' => 'required',
+            'state_code' => 'required',
+            'city' => 'required',
+            'zip' => 'required',
+        ]);
+        return $this->request('POST', 'tax/rates', ['recipient' => $recipient]);
     }
 
 }
