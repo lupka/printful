@@ -89,7 +89,7 @@ class PrintfulClient
      */
     public function getProducts()
     {
-        return $this->request('GET', 'products');
+        return collect($this->request('GET', 'products'));
     }
 
     /**
@@ -101,7 +101,9 @@ class PrintfulClient
      */
     public function getVariants($productId)
     {
-        return $this->request('GET', 'products/'.$productId);
+        $variantData = $this->request('GET', 'products/'.$productId);
+        $variantData->variants = collect($variantData->variants);
+        return $variantData;
     }
 
     /**
