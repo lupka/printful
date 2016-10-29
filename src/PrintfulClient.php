@@ -115,6 +115,23 @@ class PrintfulClient
      */
     public function createOrder($orderData)
     {
+        $this->validator = Validator::make($orderData, [
+            'external_id' => 'required',
+            'shipping' => 'required',
+            'recipient.name' => 'required',
+            'recipient.address1' => 'required',
+            'recipient.city' => 'required',
+            'recipient.state_code' => 'required',
+            'recipient.country_code' => 'required',
+            'recipient.zip' => 'required',
+            'items' => 'required|array',
+            'items.*.external_id' => 'required',
+            'items.*.variant_id' => 'required',
+            'items.*.quantity' => 'required',
+            'items.*.retail_price' => 'required',
+            'items.*.name' => 'required',
+            'items.*.files' => 'required|array',
+        ]);
         return $this->request('POST', 'orders', $orderData);
     }
 
@@ -134,6 +151,24 @@ class PrintfulClient
             'zip' => 'required',
         ]);
         return $this->request('POST', 'tax/rates', ['recipient' => $recipient]);
+    }
+
+    /**
+     * Calculate shipping rate
+     *
+     * @param array     $shippingRequest
+     *
+     * @return array
+     */
+    public function calculateShippingRates($shippingRequest)
+    {
+        $this->validator = Validator::make($shippingRequest, [
+            'recipient.address1' => 'required',
+            'recipient.city' => 'required',
+            'recipient.country_code' => 'required',
+            'items' => 'required|array',
+        ]);
+        return collect($this->request('POST', 'shipping/rates', $shippingRequest));
     }
 
 }
