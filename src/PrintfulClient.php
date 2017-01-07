@@ -55,6 +55,7 @@ class PrintfulClient
         $this->client = new Client([
             'headers' => ['Authorization' => ['Basic '.base64_encode($this->key)]],
             'base_uri' => $this->base_url,
+            'http_errors' => false,
         ]);
     }
 
@@ -133,6 +134,19 @@ class PrintfulClient
             'items.*.files' => 'required|array',
         ]);
         return $this->request('POST', 'orders', $orderData);
+    }
+
+    /**
+     * Return information about an existing order
+     * Order ID (integer) or External ID (if prefixed with @)
+     *
+     * @param mixed     $orderId
+     *
+     * @return array
+     */
+    public function getOrder($orderId)
+    {
+        return $this->request('GET', 'orders/'.$orderId);
     }
 
     /**
